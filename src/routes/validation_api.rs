@@ -9,8 +9,15 @@ use crate::error::AppError;
 pub async fn validate(State(state): State<SharedState>) -> Result<Html<String>, AppError> {
     let result = validate_config(&state.ghostty_path)?;
 
-    let (icon, color_class) = if result.contains("valid") || result.contains("Valid") || result.trim().is_empty() || result == "Configuration is valid!" {
-        ("&#x2705;", "bg-emerald-50 border-emerald-300 text-emerald-800")
+    let (icon, color_class) = if result.contains("valid")
+        || result.contains("Valid")
+        || result.trim().is_empty()
+        || result == "Configuration is valid!"
+    {
+        (
+            "&#x2705;",
+            "bg-emerald-50 border-emerald-300 text-emerald-800",
+        )
     } else {
         ("&#x26a0;", "bg-amber-50 border-amber-300 text-amber-800")
     };

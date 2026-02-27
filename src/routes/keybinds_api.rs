@@ -2,10 +2,10 @@ use axum::extract::State;
 use axum::response::Html;
 use serde::Deserialize;
 
+use super::config_api::{toast_html, unsaved_badge_oob};
 use crate::app_state::SharedState;
 use crate::config::model::ConfigEntry;
 use crate::error::AppError;
-use super::config_api::{toast_html, unsaved_badge_oob};
 
 #[derive(Deserialize)]
 pub struct AddKeybindForm {
@@ -22,7 +22,10 @@ pub async fn add_keybind(
     let action = form.action.trim();
 
     if trigger.is_empty() || action.is_empty() {
-        return Ok(Html(toast_html("Both trigger and action are required", true)));
+        return Ok(Html(toast_html(
+            "Both trigger and action are required",
+            true,
+        )));
     }
 
     let keybind_value = format!("{}={}", trigger, action);

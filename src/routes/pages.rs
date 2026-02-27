@@ -33,10 +33,7 @@ pub async fn index(State(state): State<SharedState>) -> Result<Html<String>, App
         .map(|cat| {
             let options = state.schema.options_for_category(&cat);
             let count = options.len();
-            let modified = options
-                .iter()
-                .filter(|o| unsaved.contains(&o.key))
-                .count();
+            let modified = options.iter().filter(|o| unsaved.contains(&o.key)).count();
             CategoryInfo {
                 slug: cat.slug().to_string(),
                 name: cat.display_name().to_string(),

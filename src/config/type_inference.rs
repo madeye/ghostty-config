@@ -51,10 +51,7 @@ pub fn infer_type(key: &str, default: &str, docs: &str) -> ConfigValueType {
     }
 
     // Path keys
-    if key == "config-file"
-        || key == "working-directory"
-        || key.starts_with("custom-shader")
-    {
+    if key == "config-file" || key == "working-directory" || key.starts_with("custom-shader") {
         return ConfigValueType::Path;
     }
 
@@ -96,7 +93,11 @@ fn extract_enum_values(docs: &str) -> Vec<String> {
                 values.push(val);
                 in_list = true;
             }
-        } else if in_list && !line.trim().is_empty() && !line.starts_with("  ") && !line.starts_with('#') {
+        } else if in_list
+            && !line.trim().is_empty()
+            && !line.starts_with("  ")
+            && !line.starts_with('#')
+        {
             // We've left the bullet list
             // Actually, keep collecting — docs may have multiple paragraphs between bullets
         }
@@ -132,55 +133,118 @@ mod tests {
 
     #[test]
     fn test_boolean_inference() {
-        assert!(matches!(infer_type("font-thicken", "false", ""), ConfigValueType::Boolean));
-        assert!(matches!(infer_type("bold-is-bright", "true", ""), ConfigValueType::Boolean));
+        assert!(matches!(
+            infer_type("font-thicken", "false", ""),
+            ConfigValueType::Boolean
+        ));
+        assert!(matches!(
+            infer_type("bold-is-bright", "true", ""),
+            ConfigValueType::Boolean
+        ));
     }
 
     #[test]
     fn test_color_inference() {
-        assert!(matches!(infer_type("background", "", ""), ConfigValueType::Color));
-        assert!(matches!(infer_type("foreground", "", ""), ConfigValueType::Color));
-        assert!(matches!(infer_type("cursor-color", "#f0f0f0", ""), ConfigValueType::Color));
-        assert!(matches!(infer_type("selection-foreground", "", ""), ConfigValueType::Color));
-        assert!(matches!(infer_type("bold-color", "", ""), ConfigValueType::Color));
+        assert!(matches!(
+            infer_type("background", "", ""),
+            ConfigValueType::Color
+        ));
+        assert!(matches!(
+            infer_type("foreground", "", ""),
+            ConfigValueType::Color
+        ));
+        assert!(matches!(
+            infer_type("cursor-color", "#f0f0f0", ""),
+            ConfigValueType::Color
+        ));
+        assert!(matches!(
+            infer_type("selection-foreground", "", ""),
+            ConfigValueType::Color
+        ));
+        assert!(matches!(
+            infer_type("bold-color", "", ""),
+            ConfigValueType::Color
+        ));
     }
 
     #[test]
     fn test_font_inference() {
-        assert!(matches!(infer_type("font-family", "", ""), ConfigValueType::Font));
-        assert!(matches!(infer_type("font-family-bold", "", ""), ConfigValueType::Font));
-        assert!(matches!(infer_type("font-family-italic", "", ""), ConfigValueType::Font));
-        assert!(matches!(infer_type("font-family-bold-italic", "", ""), ConfigValueType::Font));
+        assert!(matches!(
+            infer_type("font-family", "", ""),
+            ConfigValueType::Font
+        ));
+        assert!(matches!(
+            infer_type("font-family-bold", "", ""),
+            ConfigValueType::Font
+        ));
+        assert!(matches!(
+            infer_type("font-family-italic", "", ""),
+            ConfigValueType::Font
+        ));
+        assert!(matches!(
+            infer_type("font-family-bold-italic", "", ""),
+            ConfigValueType::Font
+        ));
     }
 
     #[test]
     fn test_keybind_inference() {
-        assert!(matches!(infer_type("keybind", "", ""), ConfigValueType::Keybind));
+        assert!(matches!(
+            infer_type("keybind", "", ""),
+            ConfigValueType::Keybind
+        ));
     }
 
     #[test]
     fn test_palette_inference() {
-        assert!(matches!(infer_type("palette", "", ""), ConfigValueType::Palette));
+        assert!(matches!(
+            infer_type("palette", "", ""),
+            ConfigValueType::Palette
+        ));
     }
 
     #[test]
     fn test_integer_inference() {
-        assert!(matches!(infer_type("scrollback-limit", "10000", ""), ConfigValueType::Integer));
-        assert!(matches!(infer_type("font-thicken-strength", "255", ""), ConfigValueType::Integer));
+        assert!(matches!(
+            infer_type("scrollback-limit", "10000", ""),
+            ConfigValueType::Integer
+        ));
+        assert!(matches!(
+            infer_type("font-thicken-strength", "255", ""),
+            ConfigValueType::Integer
+        ));
     }
 
     #[test]
     fn test_float_inference() {
-        assert!(matches!(infer_type("font-size", "13", ""), ConfigValueType::Float)); // manual override
-        assert!(matches!(infer_type("faint-opacity", "0.5", ""), ConfigValueType::Float));
-        assert!(matches!(infer_type("unknown-float", "1.5", ""), ConfigValueType::Float));
+        assert!(matches!(
+            infer_type("font-size", "13", ""),
+            ConfigValueType::Float
+        )); // manual override
+        assert!(matches!(
+            infer_type("faint-opacity", "0.5", ""),
+            ConfigValueType::Float
+        ));
+        assert!(matches!(
+            infer_type("unknown-float", "1.5", ""),
+            ConfigValueType::Float
+        ));
     }
 
     #[test]
     fn test_path_inference() {
-        assert!(matches!(infer_type("config-file", "", ""), ConfigValueType::Path));
-        assert!(matches!(infer_type("working-directory", "", ""), ConfigValueType::Path));
-        assert!(matches!(infer_type("custom-shader", "", ""), ConfigValueType::Path));
+        assert!(matches!(
+            infer_type("config-file", "", ""),
+            ConfigValueType::Path
+        ));
+        assert!(matches!(
+            infer_type("working-directory", "", ""),
+            ConfigValueType::Path
+        ));
+        assert!(matches!(
+            infer_type("custom-shader", "", ""),
+            ConfigValueType::Path
+        ));
     }
 
     #[test]
@@ -191,7 +255,9 @@ mod tests {
   * `bar` - A bar cursor
   * `underline` - An underline cursor
 "#;
-        assert!(matches!(infer_type("cursor-style", "block", docs), ConfigValueType::Enum(v) if v.len() == 3));
+        assert!(
+            matches!(infer_type("cursor-style", "block", docs), ConfigValueType::Enum(v) if v.len() == 3)
+        );
     }
 
     #[test]
@@ -204,8 +270,14 @@ mod tests {
 
     #[test]
     fn test_text_fallback() {
-        assert!(matches!(infer_type("unknown-key", "", ""), ConfigValueType::Text));
-        assert!(matches!(infer_type("title", "my title", ""), ConfigValueType::Text));
+        assert!(matches!(
+            infer_type("unknown-key", "", ""),
+            ConfigValueType::Text
+        ));
+        assert!(matches!(
+            infer_type("title", "my title", ""),
+            ConfigValueType::Text
+        ));
     }
 
     #[test]
@@ -222,9 +294,18 @@ mod tests {
 
     #[test]
     fn test_manual_overrides() {
-        assert!(matches!(infer_type("font-size", "13", ""), ConfigValueType::Float));
-        assert!(matches!(infer_type("window-padding-balance", "false", ""), ConfigValueType::Boolean));
-        assert!(matches!(infer_type("adjust-cell-width", "", ""), ConfigValueType::Text));
+        assert!(matches!(
+            infer_type("font-size", "13", ""),
+            ConfigValueType::Float
+        ));
+        assert!(matches!(
+            infer_type("window-padding-balance", "false", ""),
+            ConfigValueType::Boolean
+        ));
+        assert!(matches!(
+            infer_type("adjust-cell-width", "", ""),
+            ConfigValueType::Text
+        ));
     }
 }
 

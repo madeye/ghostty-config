@@ -50,10 +50,7 @@ pub fn run_ghostty(ghostty_path: &PathBuf, args: &[&str]) -> Result<String, AppE
         if !stderr.is_empty() {
             return Ok(stderr);
         }
-        return Err(AppError::Cli(format!(
-            "ghostty command failed: {}",
-            stderr
-        )));
+        return Err(AppError::Cli(format!("ghostty command failed: {}", stderr)));
     }
 
     if stdout.is_empty() && !stderr.is_empty() {

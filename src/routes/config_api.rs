@@ -72,13 +72,15 @@ pub async fn delete_value(
     state.mark_unsaved(&key).await;
     let count = state.unsaved_count().await;
 
-    Ok(Html(toast_with_badge("Reset to default (unsaved)", false, count)))
+    Ok(Html(toast_with_badge(
+        "Reset to default (unsaved)",
+        false,
+        count,
+    )))
 }
 
 /// POST /api/save — write in-memory config to disk, then reload.
-pub async fn save_config(
-    State(state): State<SharedState>,
-) -> Result<Html<String>, AppError> {
+pub async fn save_config(State(state): State<SharedState>) -> Result<Html<String>, AppError> {
     let path = {
         let user_config = state.user_config.read().await;
         write_config(&user_config)?;
@@ -94,9 +96,7 @@ pub async fn save_config(
 }
 
 /// POST /api/apply — save config to disk and tell Ghostty to reload.
-pub async fn apply_config(
-    State(state): State<SharedState>,
-) -> Result<Html<String>, AppError> {
+pub async fn apply_config(State(state): State<SharedState>) -> Result<Html<String>, AppError> {
     let path = {
         let user_config = state.user_config.read().await;
         write_config(&user_config)?;
@@ -114,7 +114,10 @@ pub async fn apply_config(
         Ok(_) => ("Config saved and Ghostty reloaded", false),
         Err(e) => {
             tracing::warn!("Failed to trigger Ghostty reload: {}", e);
-            ("Config saved (reload Ghostty manually with Cmd+Shift+,)", true)
+            (
+                "Config saved (reload Ghostty manually with Cmd+Shift+,)",
+                true,
+            )
         }
     };
 
@@ -127,13 +130,15 @@ fn trigger_ghostty_reload() -> Result<(), String> {
     {
         let output = std::process::Command::new("osascript")
             .arg("-e")
-            .arg(r#"tell application "System Events"
+            .arg(
+                r#"tell application "System Events"
     if (name of processes) contains "ghostty" then
         tell process "ghostty"
             keystroke "," using {command down, shift down}
         end tell
     end if
-end tell"#)
+end tell"#,
+            )
             .output()
             .map_err(|e| format!("osascript failed: {}", e))?;
 

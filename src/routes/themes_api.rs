@@ -47,7 +47,9 @@ pub async fn list_themes(
             .filter(|c| !c.is_empty())
             .map(|c| {
                 let mut s = String::new();
-                s.push_str("<span class=\"w-4 h-4 rounded-full inline-block\" style=\"background-color: ");
+                s.push_str(
+                    "<span class=\"w-4 h-4 rounded-full inline-block\" style=\"background-color: ",
+                );
                 s.push_str(c);
                 s.push_str("\"></span>");
                 s
@@ -61,12 +63,16 @@ pub async fn list_themes(
             ""
         };
 
-        html.push_str("<div class=\"rounded-xl border border-gray-200 p-3 cursor-pointer transition-all ");
+        html.push_str(
+            "<div class=\"rounded-xl border border-gray-200 p-3 cursor-pointer transition-all ",
+        );
         html.push_str(active_class);
         html.push_str("\" hx-post=\"/api/themes/apply?name=");
         html.push_str(&theme.name);
         html.push_str("\" hx-target=\"#toast-container\" hx-swap=\"innerHTML\" onclick=\"setTimeout(function(){location.reload()},500)\">");
-        html.push_str("<div class=\"rounded-lg h-20 mb-2 flex items-end p-2\" style=\"background-color: ");
+        html.push_str(
+            "<div class=\"rounded-lg h-20 mb-2 flex items-end p-2\" style=\"background-color: ",
+        );
         html.push_str(&theme.background);
         html.push_str("; color: ");
         html.push_str(&theme.foreground);

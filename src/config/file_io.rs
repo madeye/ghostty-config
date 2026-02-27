@@ -145,7 +145,9 @@ mod tests {
         let path = tmp.path().to_path_buf();
 
         let mut config = UserConfig::new(path.clone());
-        config.entries.push(ConfigEntry::Comment("# Generated config".to_string()));
+        config
+            .entries
+            .push(ConfigEntry::Comment("# Generated config".to_string()));
         config.entries.push(ConfigEntry::BlankLine);
         config.entries.push(ConfigEntry::KeyValue {
             key: "font-size".to_string(),

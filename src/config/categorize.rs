@@ -34,11 +34,19 @@ pub fn categorize_key(key: &str) -> Category {
         return Category::Clipboard;
     }
 
-    if key.starts_with("shell-") || key == "command" || key == "wait-after-command" || key == "initial-command" {
+    if key.starts_with("shell-")
+        || key == "command"
+        || key == "wait-after-command"
+        || key == "initial-command"
+    {
         return Category::Shell;
     }
 
-    if key.starts_with("window-") || key.starts_with("resize-") || key.starts_with("fullscreen") || key == "confirm-close-surface" {
+    if key.starts_with("window-")
+        || key.starts_with("resize-")
+        || key.starts_with("fullscreen")
+        || key == "confirm-close-surface"
+    {
         return Category::Window;
     }
 
@@ -59,7 +67,11 @@ pub fn categorize_key(key: &str) -> Category {
         return Category::Colors;
     }
 
-    if key.starts_with("macos-") || key.starts_with("auto-update") || key == "quick-terminal-position" || key.starts_with("quick-terminal") {
+    if key.starts_with("macos-")
+        || key.starts_with("auto-update")
+        || key == "quick-terminal-position"
+        || key.starts_with("quick-terminal")
+    {
         return Category::MacOS;
     }
 
@@ -71,7 +83,10 @@ pub fn categorize_key(key: &str) -> Category {
         return Category::Scrollback;
     }
 
-    if key.starts_with("input-") || key == "vt-kam-allowed" || key.starts_with("desktop-notifications") {
+    if key.starts_with("input-")
+        || key == "vt-kam-allowed"
+        || key.starts_with("desktop-notifications")
+    {
         return Category::Input;
     }
 
@@ -91,16 +106,18 @@ pub fn categorize_key(key: &str) -> Category {
         return Category::Fonts;
     }
 
-    if key == "unfocused-split-fill"
-        || key == "split-color"
-        || key.starts_with("unfocused-split")
-    {
+    if key == "unfocused-split-fill" || key == "split-color" || key.starts_with("unfocused-split") {
         return Category::Appearance;
     }
 
-    if key == "osc-color-report-format" || key == "abnormal-command-exit-runtime" || key == "image-storage-limit"
-        || key == "custom-shader" || key == "custom-shader-animation" || key.starts_with("grapheme-")
-        || key.starts_with("freetype-") || key == "async-backend"
+    if key == "osc-color-report-format"
+        || key == "abnormal-command-exit-runtime"
+        || key == "image-storage-limit"
+        || key == "custom-shader"
+        || key == "custom-shader-animation"
+        || key.starts_with("grapheme-")
+        || key.starts_with("freetype-")
+        || key == "async-backend"
     {
         return Category::Advanced;
     }

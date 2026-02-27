@@ -195,13 +195,10 @@ impl UserConfig {
 
     /// Get the value for a key (returns the last occurrence for repeatable keys).
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.entries
-            .iter()
-            .rev()
-            .find_map(|e| match e {
-                ConfigEntry::KeyValue { key: k, value } if k == key => Some(value.as_str()),
-                _ => None,
-            })
+        self.entries.iter().rev().find_map(|e| match e {
+            ConfigEntry::KeyValue { key: k, value } if k == key => Some(value.as_str()),
+            _ => None,
+        })
     }
 
     /// Get all values for a repeatable key.
@@ -471,7 +468,9 @@ mod tests {
     #[test]
     fn test_user_config_all_set_values() {
         let mut config = UserConfig::new(PathBuf::from("/tmp/test"));
-        config.entries.push(ConfigEntry::Comment("# comment".to_string()));
+        config
+            .entries
+            .push(ConfigEntry::Comment("# comment".to_string()));
         config.set("font-size", "14");
         config.entries.push(ConfigEntry::BlankLine);
         config.set("theme", "Dracula");
@@ -485,7 +484,9 @@ mod tests {
     #[test]
     fn test_user_config_remove_preserves_comments() {
         let mut config = UserConfig::new(PathBuf::from("/tmp/test"));
-        config.entries.push(ConfigEntry::Comment("# header".to_string()));
+        config
+            .entries
+            .push(ConfigEntry::Comment("# header".to_string()));
         config.set("font-size", "14");
         config.entries.push(ConfigEntry::BlankLine);
         config.set("theme", "Dracula");

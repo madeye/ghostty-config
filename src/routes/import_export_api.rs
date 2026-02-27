@@ -2,10 +2,10 @@ use axum::extract::State;
 use axum::response::Html;
 use serde::Deserialize;
 
+use super::config_api::{toast_html, unsaved_badge_oob};
 use crate::app_state::SharedState;
 use crate::config::model::ConfigEntry;
 use crate::error::AppError;
-use super::config_api::{toast_html, unsaved_badge_oob};
 
 /// GET /api/export — export config as plain text.
 pub async fn export_config(State(state): State<SharedState>) -> Result<String, AppError> {
@@ -65,7 +65,10 @@ pub async fn import_config(
     state.mark_unsaved("import").await;
     let count = state.unsaved_count().await;
 
-    let mut html = toast_html("Configuration imported (unsaved). Use Save or Apply.", false);
+    let mut html = toast_html(
+        "Configuration imported (unsaved). Use Save or Apply.",
+        false,
+    );
     html.push_str(&unsaved_badge_oob(count));
     Ok(Html(html))
 }

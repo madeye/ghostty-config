@@ -11,9 +11,7 @@ pub struct FontQuery {
 }
 
 /// GET /api/fonts — return all font families.
-pub async fn list_fonts(
-    State(state): State<SharedState>,
-) -> Result<Html<String>, AppError> {
+pub async fn list_fonts(State(state): State<SharedState>) -> Result<Html<String>, AppError> {
     let mut html = String::new();
     for font in &state.fonts {
         html.push_str(&format!(

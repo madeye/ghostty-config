@@ -95,7 +95,8 @@ mod tests {
 
     #[test]
     fn test_parse_font_list_sorted() {
-        let input = "Zapfino\n  Zapfino Regular\n\nArial\n  Arial Regular\n\nMenlo\n  Menlo Regular\n";
+        let input =
+            "Zapfino\n  Zapfino Regular\n\nArial\n  Arial Regular\n\nMenlo\n  Menlo Regular\n";
         let fonts = parse_font_list(input);
         assert_eq!(fonts.len(), 3);
         // Should be sorted alphabetically (case-insensitive)

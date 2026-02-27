@@ -195,7 +195,8 @@ mod tests {
 
     #[test]
     fn test_parse_theme_file_skips_comments() {
-        let content = "# This is a comment\nbackground = #000000\n# Another comment\nforeground = #ffffff\n";
+        let content =
+            "# This is a comment\nbackground = #000000\n# Another comment\nforeground = #ffffff\n";
         let mut tmp = NamedTempFile::new().unwrap();
         tmp.write_all(content.as_bytes()).unwrap();
 
