@@ -23,6 +23,15 @@ function stopCapture() {
     btn.textContent = 'Click to record shortcut...';
 }
 
+function selectMouseButton(select) {
+    const value = select.value;
+    if (value) {
+        const input = document.getElementById('keybind-trigger');
+        input.value = value;
+    }
+    select.selectedIndex = 0;
+}
+
 document.addEventListener('keydown', function(e) {
     if (!capturing) return;
 
