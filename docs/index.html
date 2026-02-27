@@ -70,6 +70,13 @@ section{padding:4rem 0}
   padding:1.5rem;transition:border-color .15s ease,box-shadow .15s ease;
 }
 .feature-card:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--glow)}
+
+/* ── Screenshot ── */
+.screenshot{text-align:center;padding:0 1.5rem 2rem}
+.screenshot img{
+  max-width:960px;width:100%;border-radius:.75rem;
+  border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
 .feature-icon{
   width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;
   border-radius:.5rem;margin-bottom:.75rem;font-size:1.25rem;
@@ -137,6 +144,13 @@ footer a:hover{color:var(--accent)}
     </div>
   </div>
 </header>
+
+<!-- Screenshot -->
+<div class="screenshot">
+  <div class="container">
+    <img src="screenshot.png" alt="ghostty-config dashboard showing terminal preview, config options, and theme browser" loading="lazy">
+  </div>
+</div>
 
 <!-- Features -->
 <section>
