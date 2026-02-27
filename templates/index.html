@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghostty Config</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/htmx.min.js"></script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
+</head>
+<body class="h-full bg-gray-50 text-gray-900">
+    <!-- Toast container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">G</span>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900">Ghostty Config</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button hx-get="/api/validate" hx-target="#validation-area" hx-swap="innerHTML"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Validate
+                </button>
+                <a href="/import-export"
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Import / Export
+                </a>
+                <span id="unsaved-badge" class="relative"></span>
+                <button hx-post="/api/save" hx-target="#toast-container" hx-swap="innerHTML"
+                        hx-on::after-request="setTimeout(() => window.location.reload(), 600)"
+                        class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-lg hover:bg-gray-900 transition-colors">
+                    Save
+                </button>
+                <button hx-post="/api/apply" hx-target="#toast-container" hx-swap="innerHTML"
+                        hx-on::after-request="setTimeout(() => window.location.reload(), 600)"
+                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+                    Save &amp; Apply
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <div class="text-3xl font-bold text-indigo-600">{{ config_count }}</div>
+                <div class="text-sm text-gray-500 mt-1">Config Options</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <div class="text-3xl font-bold text-purple-600">{{ theme_count }}</div>
+                <div class="text-sm text-gray-500 mt-1">Themes</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <div class="text-3xl font-bold text-pink-600">{{ font_count }}</div>
+                <div class="text-sm text-gray-500 mt-1">Font Families</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <div class="text-3xl font-bold text-emerald-600">{{ modified_count }}</div>
+                <div class="text-sm text-gray-500 mt-1">Modified Settings</div>
+            </div>
+        </div>
+
+        <!-- Validation area -->
+        <div id="validation-area" class="mb-6"></div>
+
+        <!-- Terminal Preview -->
+        <div class="mb-8">
+            <h2 class="text-lg font-semibold mb-3">Terminal Preview</h2>
+            <div hx-get="/api/preview" hx-trigger="load" hx-swap="innerHTML" id="preview-area">
+                <div class="animate-pulse bg-gray-200 rounded-xl h-48"></div>
+            </div>
+        </div>
+
+        <!-- Categories Grid -->
+        <h2 class="text-lg font-semibold mb-4">Categories</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {% for cat in categories %}
+            <a href="/category/{{ cat.slug }}"
+               class="rounded-xl border p-4 hover:shadow-md transition-all group {% if cat.modified > 0 %}bg-indigo-50 border-indigo-300 hover:border-indigo-400{% else %}bg-white border-gray-200 hover:border-indigo-300{% endif %}">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl">{{ cat.icon }}</span>
+                    <span class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ cat.name }}</span>
+                    {% if cat.modified > 0 %}
+                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-indigo-500 rounded-full">{{ cat.modified }}</span>
+                    {% endif %}
+                </div>
+                <div class="text-sm text-gray-500">{{ cat.count }} options</div>
+            </a>
+            {% endfor %}
+
+            <!-- Theme browser link -->
+            <a href="/themes"
+               class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200 p-4 hover:border-indigo-400 hover:shadow-md transition-all group">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl">&#x1f3a8;</span>
+                    <span class="font-semibold text-indigo-700 group-hover:text-indigo-800 transition-colors">Themes</span>
+                </div>
+                <div class="text-sm text-indigo-500">{{ theme_count }} built-in themes</div>
+            </a>
+
+            <!-- Keybindings link -->
+            <a href="/keybinds"
+               class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-200 p-4 hover:border-amber-400 hover:shadow-md transition-all group">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl">&#x2328;</span>
+                    <span class="font-semibold text-amber-700 group-hover:text-amber-800 transition-colors">Keybindings</span>
+                </div>
+                <div class="text-sm text-amber-500">Customize shortcuts</div>
+            </a>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

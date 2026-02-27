@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keybindings - Ghostty Config</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/htmx.min.js"></script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    </style>
+</head>
+<body class="h-full bg-gray-50 text-gray-900">
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </a>
+                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">G</span>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900">Ghostty Config</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="unsaved-badge" class="relative"></span>
+                <button hx-post="/api/save" hx-target="#toast-container" hx-swap="innerHTML"
+                        hx-on::after-request="setTimeout(() => window.location.reload(), 600)"
+                        class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-lg hover:bg-gray-900 transition-colors">
+                    Save
+                </button>
+                <button hx-post="/api/apply" hx-target="#toast-container" hx-swap="innerHTML"
+                        hx-on::after-request="setTimeout(() => window.location.reload(), 600)"
+                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+                    Save &amp; Apply
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex max-w-7xl mx-auto">
+        <!-- Sidebar -->
+        <aside class="w-56 flex-shrink-0 border-r border-gray-200 bg-white min-h-[calc(100vh-57px)] py-4 px-2">
+            <nav class="space-y-0.5">
+                {% for cat in categories %}
+                <a href="/category/{{ cat.slug }}"
+                   class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors">
+                    <span class="w-6 text-center">{{ cat.icon }}</span>
+                    <span>{{ cat.name }}</span>
+                </a>
+                {% endfor %}
+                <hr class="my-2 border-gray-200">
+                <a href="/themes" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors">
+                    <span class="w-6 text-center">&#x1f3a8;</span>
+                    <span>Themes</span>
+                </a>
+                <a href="/keybinds" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-indigo-50 text-indigo-700 font-medium">
+                    <span class="w-6 text-center">&#x2328;</span>
+                    <span>Keybindings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Keybindings</h2>
+            <p class="text-sm text-gray-500 mb-6">Customize keyboard shortcuts. Custom keybindings override defaults.</p>
+
+            <!-- Add new keybinding -->
+            <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                <h3 class="font-semibold text-gray-900 mb-3">Add Keybinding</h3>
+                <form hx-post="/api/keybinds" hx-target="#toast-container" hx-swap="innerHTML"
+                      class="flex items-end gap-4" onsubmit="setTimeout(() => location.reload(), 500)">
+                    <div class="flex-1">
+                        <label class="block text-sm text-gray-600 mb-1">Trigger</label>
+                        <input type="text" name="trigger" id="keybind-trigger" placeholder="e.g., super+shift+n"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500"
+                               readonly>
+                        <button type="button" onclick="startCapture()" id="capture-btn"
+                                class="mt-1 text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+                            Click to record shortcut...
+                        </button>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm text-gray-600 mb-1">Action</label>
+                        <select name="action" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-500">
+                            {% for action in actions %}
+                            <option value="{{ action }}">{{ action }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Add
+                    </button>
+                </form>
+            </div>
+
+            <!-- Keybinding table -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Trigger</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Source</th>
+                            <th class="px-4 py-3 w-16"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for kb in keybinds %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-3">
+                                <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs font-mono text-gray-700">{{ kb.trigger }}</kbd>
+                            </td>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">{{ kb.action }}</td>
+                            <td class="px-4 py-3">
+                                {% if kb.is_custom %}
+                                <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Custom</span>
+                                {% else %}
+                                <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Default</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if kb.is_custom %}
+                                <form hx-post="/api/keybinds/delete" hx-target="#toast-container" hx-swap="innerHTML"
+                                      onsubmit="setTimeout(() => location.reload(), 500)" style="display:inline">
+                                    <input type="hidden" name="trigger" value="{{ kb.trigger }}">
+                                    <input type="hidden" name="action" value="{{ kb.action }}">
+                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/keycapture.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
