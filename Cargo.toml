@@ -3,6 +3,8 @@ name = "ghostty-config"
 version = "0.1.0"
 edition = "2021"
 description = "Web-based configuration GUI for Ghostty terminal"
+license = "MIT"
+authors = ["Max Lv <max.c.lv@gmail.com>"]
 
 [dependencies]
 axum = "0.8"
