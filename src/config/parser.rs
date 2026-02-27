@@ -20,13 +20,9 @@ pub fn parse_show_config(output: &str) -> Result<ConfigSchema, AppError> {
     let mut seen_keys = std::collections::HashSet::new();
 
     for line in output.lines() {
-        if line.starts_with('#') {
+        if let Some(stripped) = line.strip_prefix('#') {
             // Strip the "# " prefix for documentation
-            let doc = if line.starts_with("# ") {
-                &line[2..]
-            } else {
-                &line[1..]
-            };
+            let doc = stripped.strip_prefix(' ').unwrap_or(stripped);
             doc_lines.push(doc.to_string());
         } else if line.trim().is_empty() {
             // Blank line — separator. If we have docs but no key yet, keep accumulating.
@@ -40,7 +36,7 @@ pub fn parse_show_config(output: &str) -> Result<ConfigSchema, AppError> {
             let value = value.trim().to_string();
 
             // Build documentation from accumulated lines, removing trailing blanks
-            while doc_lines.last().map_or(false, |l| l.is_empty()) {
+            while doc_lines.last().is_some_and(|l| l.is_empty()) {
                 doc_lines.pop();
             }
             let documentation = doc_lines.join("\n");
@@ -132,14 +128,20 @@ some-key = value
     fn test_parse_boolean_type_inferred() {
         let input = "# Doc.\nfont-thicken = false\n";
         let schema = parse_show_config(input).unwrap();
-        assert!(matches!(schema.options[0].value_type, ConfigValueType::Boolean));
+        assert!(matches!(
+            schema.options[0].value_type,
+            ConfigValueType::Boolean
+        ));
     }
 
     #[test]
     fn test_parse_keybind_type() {
         let input = "# Doc.\nkeybind = \n";
         let schema = parse_show_config(input).unwrap();
-        assert!(matches!(schema.options[0].value_type, ConfigValueType::Keybind));
+        assert!(matches!(
+            schema.options[0].value_type,
+            ConfigValueType::Keybind
+        ));
         assert!(schema.options[0].is_repeatable);
     }
 
@@ -147,7 +149,10 @@ some-key = value
     fn test_parse_palette_type() {
         let input = "# Doc.\npalette = \n";
         let schema = parse_show_config(input).unwrap();
-        assert!(matches!(schema.options[0].value_type, ConfigValueType::Palette));
+        assert!(matches!(
+            schema.options[0].value_type,
+            ConfigValueType::Palette
+        ));
         assert!(schema.options[0].is_repeatable);
     }
 
@@ -162,7 +167,8 @@ some-key = value
 
     #[test]
     fn test_schema_options_for_category() {
-        let input = "# Doc.\nfont-size = 13\n# Doc.\nfont-thicken = false\n# Doc.\ncursor-style = block\n";
+        let input =
+            "# Doc.\nfont-size = 13\n# Doc.\nfont-thicken = false\n# Doc.\ncursor-style = block\n";
         let schema = parse_show_config(input).unwrap();
         let font_opts = schema.options_for_category(&crate::config::model::Category::Fonts);
         assert!(font_opts.len() >= 2);

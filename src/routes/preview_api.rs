@@ -17,7 +17,7 @@ pub async fn preview_data(State(state): State<SharedState>) -> Result<Html<Strin
     // Get palette colors for ANSI preview
     let palette_colors: Vec<String> = (0..16)
         .map(|i| {
-            let key = format!("palette");
+            let key = "palette".to_string();
             // Check for palette = i=#color entries
             for val in user_config.get_all(&key) {
                 if let Some((idx_str, color)) = val.split_once('=') {
@@ -52,11 +52,26 @@ pub async fn preview_data(State(state): State<SharedState>) -> Result<Html<Strin
         cursor_color = cursor_color,
         font_family = font_family,
         font_size = font_size,
-        c1 = palette_colors.get(1).map(|s| s.as_str()).unwrap_or("#ff5555"),
-        c2 = palette_colors.get(2).map(|s| s.as_str()).unwrap_or("#50fa7b"),
-        c3 = palette_colors.get(3).map(|s| s.as_str()).unwrap_or("#f1fa8c"),
-        c4 = palette_colors.get(4).map(|s| s.as_str()).unwrap_or("#bd93f9"),
-        c6 = palette_colors.get(6).map(|s| s.as_str()).unwrap_or("#8be9fd"),
+        c1 = palette_colors
+            .get(1)
+            .map(|s| s.as_str())
+            .unwrap_or("#ff5555"),
+        c2 = palette_colors
+            .get(2)
+            .map(|s| s.as_str())
+            .unwrap_or("#50fa7b"),
+        c3 = palette_colors
+            .get(3)
+            .map(|s| s.as_str())
+            .unwrap_or("#f1fa8c"),
+        c4 = palette_colors
+            .get(4)
+            .map(|s| s.as_str())
+            .unwrap_or("#bd93f9"),
+        c6 = palette_colors
+            .get(6)
+            .map(|s| s.as_str())
+            .unwrap_or("#8be9fd"),
     )))
 }
 
